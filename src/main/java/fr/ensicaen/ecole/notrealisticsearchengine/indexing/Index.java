@@ -1,25 +1,21 @@
 package fr.ensicaen.ecole.notrealisticsearchengine.indexing;
 
-import fr.ensicaen.ecole.notrealisticsearchengine.tokenizer.DefaultTokenizer;
-import fr.ensicaen.ecole.notrealisticsearchengine.tokenizer.Tokenizer;
+import fr.ensicaen.ecole.notrealisticsearchengine.exception.DocumentNotLoadedException;
 
-import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 public class Index {
 
-    private Tokenizer tokenizer;
+    private final HashMap<String, Document> documents = new HashMap<>();
 
-    public Index() {
-        this(new DefaultTokenizer());
-    }
+    public Index() {}
 
-    public Index(Tokenizer tokenizer) {
-        this.tokenizer = tokenizer;
-    }
-
-    public void index(Document document) {
-
+    public void index(Document document) throws DocumentNotLoadedException {
+        if (!document.isLoaded()) {
+            throw new DocumentNotLoadedException("Document must be loaded before indexing");
+        }
+        documents.put(document.getId(), document);
     }
 
     public List<Document> search(String query) {
