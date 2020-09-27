@@ -1,8 +1,14 @@
 package fr.ensicaen.ecole.notrealisticsearchengine.search;
 
+import fr.ensicaen.ecole.notrealisticsearchengine.indexing.Document;
+import fr.ensicaen.ecole.notrealisticsearchengine.indexing.Index;
 import fr.ensicaen.ecole.notrealisticsearchengine.tokenizer.Tokenizer;
+import org.apache.commons.lang3.tuple.Pair;
 
+import javax.print.Doc;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import static java.lang.Math.sqrt;
@@ -11,10 +17,10 @@ import static java.lang.Math.sqrt;
 public class Request {
 
     private String query;
-    private float[] request_vector;
     private Tokenizer tokenizer;
 
-    private ArrayList<Float> salton_coefficient;
+    private HashMap<String, Integer> request_vector;
+    private ArrayList<Pair<Document, Float>> salton_coefficient;
 
     /**
      * Constructor of Request class.
@@ -24,6 +30,9 @@ public class Request {
     public Request(String query, Tokenizer tokenizer) {
         this.query = query;
         this.tokenizer = tokenizer;
+
+        this.request_vector = new HashMap<String, Integer>();
+        this.salton_coefficient = new ArrayList<Pair<Document, Float>>();
     }
 
 
@@ -33,30 +42,51 @@ public class Request {
      */
     public void execute() {
         String[] tokens = tokenizer.tokenize(this.query);
-        /*A reprendre*/
+
+        for (int i = 0; i < tokens.length; i++) {
+            if (!this.request_vector.containsKey(tokens[i])) {
+                this.request_vector.put(tokens[i], 1);
+            }
+        }
     }
 
     /**
      * salton_compute() method.
      * Compute the coefficient of Salton using a document vector and the request vector.
+     * @param index
      * @param v The document vector of occurences.
-     * @param r The request vector of occurences.
+     * @param words
      */
-    public void salton_compute(float[] v, float[] r) {
-        int n = v.length;
+    public void salton_compute(Index index, Document v, HashSet<String> words) {
         float C = 0;
         float vr_sum = 0;
         float v2_sum = 0;
         float r2_sum = 0;
 
-        for(int i = 0; i < n; i++) {
-            vr_sum += v[n]*r[n];
-            v2_sum += v[n]*v[n];
-            r2_sum += r[n]*r[n];
+        float pij;
+        int r;
+
+        for(String word: words) {
+            pij = index.getTFIDF(v, word);
+            r = this.request_vector.getOrDefault(word, 0);
+
+            vr_sum += pij * r;
+            v2_sum = pij * pij;
+            r2_sum += r * r;
         }
 
         C = vr_sum/((float)sqrt(v2_sum*r2_sum));
-        this.salton_coefficient.add(C);
+        this.salton_coefficient.add(Pair.of(v, C));
+    }
+
+    public Document[] result(int n) {
+        this.salton_coefficient.sort((o1, o2) -> Float.compare(o1.getValue(), o2.getValue()));
+        Document[] document_list = new Document[n];
+        for(int i = 0; i < n; i++) {
+            document_list[i] = this.salton_coefficient.get(i).getKey();
+        }
+
+        return document_list;
     }
 
 }
