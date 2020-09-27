@@ -21,7 +21,8 @@ public class Request {
 
     /**
      * Constructor of Request class.
-     * @param query Request of the user
+     *
+     * @param query     Request of the user
      * @param tokenizer Entity of Tokenizer class
      */
     public Request(String query, Tokenizer tokenizer) {
@@ -50,8 +51,9 @@ public class Request {
     /**
      * salton_compute() method.
      * Compute the coefficient of Salton using a document vector and the request vector.
+     *
      * @param index
-     * @param v The document vector of occurences.
+     * @param v     The document vector of occurences.
      * @param words
      */
     private void salton_compute(Index index, Document v, HashSet<String> words) {
@@ -63,16 +65,19 @@ public class Request {
         float pij;
         int r;
 
-        for(String word: words) {
+        for (String word : words) {
             pij = index.getTFIDF(v, word);
             r = this.request_vector.getOrDefault(word, 0);
 
             vr_sum += pij * r;
-            v2_sum = pij * pij;
+            v2_sum += pij * pij;
             r2_sum += r * r;
         }
 
-        C = vr_sum/((float)sqrt(v2_sum*r2_sum));
+        C = vr_sum / ((float) sqrt(v2_sum * r2_sum));
+        if (Float.isNaN(C)) {
+            C = 0;
+        }
         this.salton_coefficient.add(Pair.of(v, C));
     }
 
@@ -80,13 +85,13 @@ public class Request {
         this.execute();
 
         HashSet<String> words = index.getAllWords();
-        for(Document doc: index.getDocuments()) {
+        for (Document doc : index.getDocuments()) {
             this.salton_compute(index, doc, words);
         }
 
-        this.salton_coefficient.sort((o1, o2) -> Float.compare(o1.getValue(), o2.getValue()));
+        this.salton_coefficient.sort((o1, o2) -> Float.compare(o2.getValue(), o1.getValue()));
         Document[] document_list = new Document[n];
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             document_list[i] = this.salton_coefficient.get(i).getKey();
         }
 

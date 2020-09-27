@@ -34,12 +34,13 @@ public class Document {
     public void load(Tokenizer tokenizer, Charset charset) throws IOException {
         String[] words = tokenizer.tokenize(FileUtils.readFileToString(file, charset));
         for (String word : words) {
-            MutableInt count = wordsOccurrences.get(word);
-            if (count == null) {
-                wordsOccurrences.put(word, new MutableInt(0));
-            }
-            else {
-                count.increment();
+            if (!word.isEmpty()) {
+                MutableInt count = wordsOccurrences.get(word);
+                if (count == null) {
+                    wordsOccurrences.put(word, new MutableInt(0));
+                } else {
+                    count.increment();
+                }
             }
         }
         isLoaded = true;
