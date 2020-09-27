@@ -5,7 +5,6 @@ import fr.ensicaen.ecole.notrealisticsearchengine.indexing.Index;
 import fr.ensicaen.ecole.notrealisticsearchengine.tokenizer.Tokenizer;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.print.Doc;
 import java.util.*;
 
 import static java.lang.Math.sqrt;
@@ -13,11 +12,11 @@ import static java.lang.Math.sqrt;
 
 public class Request {
 
-    private String query;
-    private Tokenizer tokenizer;
+    private final String query;
+    private final Tokenizer tokenizer;
 
-    private HashMap<String, Integer> request_vector;
-    private ArrayList<Pair<Document, Float>> salton_coefficient;
+    private final HashMap<String, Integer> request_vector;
+    private final ArrayList<Pair<Document, Float>> salton_coefficient;
 
     /**
      * Constructor of Request class.
@@ -29,8 +28,8 @@ public class Request {
         this.query = query;
         this.tokenizer = tokenizer;
 
-        this.request_vector = new HashMap<String, Integer>();
-        this.salton_coefficient = new ArrayList<Pair<Document, Float>>();
+        this.request_vector = new HashMap<>();
+        this.salton_coefficient = new ArrayList<>();
     }
 
 
@@ -41,9 +40,9 @@ public class Request {
     private void execute() {
         String[] tokens = tokenizer.tokenize(this.query);
 
-        for (int i = 0; i < tokens.length; i++) {
-            if (!this.request_vector.containsKey(tokens[i])) {
-                this.request_vector.put(tokens[i], 1);
+        for (String token : tokens) {
+            if (!this.request_vector.containsKey(token)) {
+                this.request_vector.put(token, 1);
             }
         }
     }
@@ -57,7 +56,7 @@ public class Request {
      * @param words
      */
     private void salton_compute(Index index, Document v, HashSet<String> words) {
-        float C = 0;
+        float C;
         float vr_sum = 0;
         float v2_sum = 0;
         float r2_sum = 0;

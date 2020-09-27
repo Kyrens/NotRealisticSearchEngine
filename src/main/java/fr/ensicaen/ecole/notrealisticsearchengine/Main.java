@@ -27,9 +27,9 @@ public class Main {
         System.out.println(loadDocuments(documentsFolder, tokenizer, index) + " documents chargés.\n");
 
         System.out.print("Termes à rechercher: ");
-        while(sc.hasNext()) {
+        while (sc.hasNext()) {
             String s = sc.nextLine();
-            if(s.equals("!exit")) {
+            if (s.equals("!exit")) {
                 break;
             }
             Request req = new Request(s, tokenizer);

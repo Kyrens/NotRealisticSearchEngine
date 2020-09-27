@@ -7,8 +7,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-
 public class IndexTest {
 
     @Test
@@ -19,7 +17,4 @@ public class IndexTest {
         idx.index(document);
     }
 
-    @Test
-    public void search() {
-    }
 }
