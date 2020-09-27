@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Document {
 
@@ -46,5 +47,26 @@ public class Document {
 
     public void load(Tokenizer tokenizer) throws IOException {
         this.load(tokenizer, StandardCharsets.UTF_8);
+    }
+
+    public float getTFIDF(Index index, String word) {
+        long docCount = index.getDocuments().stream().filter(document -> document.hasWord(word)).count();
+        return (float) getWordOccurrence(word) * (float) Math.log((float) index.getDocuments().size() / (float) docCount);
+    }
+
+    public boolean hasWord(String word) {
+        return wordsOccurrences.containsKey(word);
+    }
+
+    public int getWordOccurrence(String word) {
+        MutableInt i = wordsOccurrences.get(word);
+        if (i == null) {
+            return 0;
+        }
+        return i.getValue();
+    }
+
+    public Set<String> getWords() {
+        return wordsOccurrences.keySet();
     }
 }

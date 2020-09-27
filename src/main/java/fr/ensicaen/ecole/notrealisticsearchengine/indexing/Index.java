@@ -2,8 +2,9 @@ package fr.ensicaen.ecole.notrealisticsearchengine.indexing;
 
 import fr.ensicaen.ecole.notrealisticsearchengine.exception.DocumentNotLoadedException;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 
 public class Index {
 
@@ -18,7 +19,19 @@ public class Index {
         documents.put(document.getId(), document);
     }
 
-    public List<Document> search(String query) {
-        return null;
+    public Collection<Document> getDocuments() {
+        return documents.values();
+    }
+
+    public float getTFIDF(Document doc, String word) {
+        return doc.getTFIDF(this, word);
+    }
+
+    public HashSet<String> getAllWords() {
+        HashSet<String> words = new HashSet<>();
+        for (Document doc : getDocuments()) {
+            words.addAll(doc.getWords());
+        }
+        return words;
     }
 }
