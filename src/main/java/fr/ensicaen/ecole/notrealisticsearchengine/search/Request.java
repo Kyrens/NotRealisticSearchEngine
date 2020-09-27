@@ -22,8 +22,8 @@ public class Request {
     /**
      * Constructor of Request class.
      *
-     * @param query     Request of the user
-     * @param tokenizer Entity of Tokenizer class
+     * @param query Request of the user.
+     * @param tokenizer Entity of Tokenizer class.
      */
     public Request(String query, Tokenizer tokenizer) {
         this.query = query;
@@ -36,7 +36,7 @@ public class Request {
 
     /**
      * execute() method.
-     * Process the query to transform it into occurences probabilities.
+     * Process the query to transform it into occurrences probabilities.
      */
     private void execute() {
         String[] tokens = tokenizer.tokenize(this.query);
@@ -52,9 +52,9 @@ public class Request {
      * salton_compute() method.
      * Compute the coefficient of Salton using a document vector and the request vector.
      *
-     * @param index
-     * @param v     The document vector of occurences.
-     * @param words
+     * @param index The index of the whole set of documents.
+     * @param v The document vector of occurrences.
+     * @param words The set of words in all documents.
      */
     private void salton_compute(Index index, Document v, HashSet<String> words) {
         float C = 0;
@@ -81,6 +81,13 @@ public class Request {
         this.salton_coefficient.add(Pair.of(v, C));
     }
 
+    /**
+     * result() method.
+     * Execute the query and return the n best documents according to the query.
+     * @param index The index of the whole set of documents.
+     * @param n The number of documents returned.
+     * @return The list of documents requested.
+     */
     public Document[] result(Index index, int n) {
         this.execute();
 
