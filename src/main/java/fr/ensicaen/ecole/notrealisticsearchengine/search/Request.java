@@ -6,10 +6,7 @@ import fr.ensicaen.ecole.notrealisticsearchengine.tokenizer.Tokenizer;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.print.Doc;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.Math.sqrt;
 
@@ -40,7 +37,7 @@ public class Request {
      * execute() method.
      * Process the query to transform it into occurences probabilities.
      */
-    public void execute() {
+    private void execute() {
         String[] tokens = tokenizer.tokenize(this.query);
 
         for (int i = 0; i < tokens.length; i++) {
@@ -57,7 +54,7 @@ public class Request {
      * @param v The document vector of occurences.
      * @param words
      */
-    public void salton_compute(Index index, Document v, HashSet<String> words) {
+    private void salton_compute(Index index, Document v, HashSet<String> words) {
         float C = 0;
         float vr_sum = 0;
         float v2_sum = 0;
@@ -79,7 +76,14 @@ public class Request {
         this.salton_coefficient.add(Pair.of(v, C));
     }
 
-    public Document[] result(int n) {
+    public Document[] result(Index index, int n) {
+        this.execute();
+
+        HashSet<String> words = index.getAllWords();
+        for(Document doc: index.getDocuments()) {
+            this.salton_compute(index, doc, words);
+        }
+
         this.salton_coefficient.sort((o1, o2) -> Float.compare(o1.getValue(), o2.getValue()));
         Document[] document_list = new Document[n];
         for(int i = 0; i < n; i++) {
